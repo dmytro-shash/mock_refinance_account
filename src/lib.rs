@@ -1,6 +1,7 @@
 mod ft;
 mod add_remove_liquidity;
 mod utils;
+mod i_am_alive;
 
 
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};

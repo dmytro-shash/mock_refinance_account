@@ -5,41 +5,17 @@
 mkdir -p res && ./build.sh && ./test.sh
 
 # clean up previuos deployment
-echo 'y' | near delete limit_orders.v1.nearlend.testnet v1.nearlend.testnet
+echo 'y' | near delete mock.ref_finance.testnet ref_finance.testnet
 
 # create corresponding accoutns
-near create-account limit_orders.v1.nearlend.testnet --masterAccount v1.nearlend.testnet --initialBalance 10
+near create-account mock.ref_finance.testnet --masterAccount ref_finance.testnet --initialBalance 10
 
 # redeploy contracts
-near deploy limit_orders.v1.nearlend.testnet \
-    --wasmFile ./res/limit_orders.wasm \
-    --initFunction 'new_with_config' \
-    --initArgs '{
-        "owner_id":"limit_orders.v1.nearlend.testnet",
-        "oracle_account_id":"test_ac_oracle.testnet"
-    }'
+near deploy mock.ref_finance.testnet \
+  --wasmFile ./res/ref_contract_mock.wasm \
+  --initFunction 'new' \
+  --initArgs '{}'
 
-
-near call limit_orders.v1.nearlend.testnet add_pair '{
-        "pair_data": {
-            
-            "sell_ticker_id": "usdt",
-            "sell_token": "usdt.qa.v1.nearlend.testnet",
-            "sell_token_market": "usdt_market.qa.v1.nearlend.testnet",
-            "buy_ticker_id": "wnear",
-            "buy_token": "wnear.qa.v1.nearlend.testnet"
-        }
-    }' --accountId limit_orders.v1.nearlend.testnet
-
-
-near call limit_orders.v1.nearlend.testnet add_pair '{
-        "pair_data": {
-            "sell_ticker_id": "wnear",
-            "sell_token": "wnear.qa.v1.nearlend.testnet",
-            "sell_token_market": "wnear_market.qa.v1.nearlend.testnet",
-            "buy_ticker_id": "usdt",
-            "buy_token": "usdt.qa.v1.nearlend.testnet"
-        }
-    }' --accountId limit_orders.v1.nearlend.testnet
-
-near view limit_orders.v1.nearlend.testnet view_supported_pairs '{}'
+# making sure its alive
+near call mock.ref_finance.testnet set_balance '{"account": "some_account.testnet", "amount": "1000"}' --accountId mock.ref_finance.testnet
+near view mock.ref_finance.testnet view_balance '{"account": "some_account.testnet"}'
